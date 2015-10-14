@@ -1,0 +1,177 @@
+******************************************************************************
+   Instalacion de ARCHLINUX CON ENTORNO GRAFICO GNOME
+******************************************************************************
+------------------------------------------------------------------------------
+1. Primero debemos instalar el sistema base...
+
+   # loadkeys us
+   # nano /etc/locale.gen
+     
+     Quitamos (#) del idioma que queremos generar...
+     En mi caso es_PE.UTF-8 y en_US.UTF-8
+
+   # locale-gen
+
+     Con esto generamos los idiomas...
+
+   # export LANG=es_PE.UTF-8
+   
+   Editamos particiones. En mi caso tenia instalado previoamente win 7 en la
+   particion sda1 y sda2..
+   Yo use para editar las particiones cfdisk debido a que este soporta parti-
+   ciones de windows...
+   Use una particion extendida porque en un disco duro se soporta solo hasta
+   4 partic. primarias...
+
+   sda1 -> particion primaria ext2 /boot
+   sda2 -> particion del sistema win 100Mb
+   sda3 -> particion primaria donde esta instalado win7...
+   sda4 -> particion extendida
+    sda5 -> particion logica ext4 /
+    sda6 -> particion logica ext4 /home
+    sda7 -> particion logica swap
+  
+   # cfdisk
+
+   Se da los formatos indicados con mkfs (make file system)...
+
+   # mkfs.ext2 /dev/sda1
+   # mkfs.ext4 /dev/sda5
+   # mkfs.ext4 /dev/sda6
+   # mkswap /dev/sda7
+   # swapon /dev/sda7
+   # lsblk -f verificamos las particiones y sus formatos...
+
+   Ahora montamos root y creamos boot y home para montar sus respectivas par-
+   ticiones...
+
+   # mount /dev/sda5 /mnt
+   # mkdir /mnt/boot
+   # mkdir /mnt/home
+   # mount /dev/sda1 /mnt/boot
+   # mount /dev/sda6 /mnt/home
+   # lsblk -f -> Con ello vemos tambien los puntos de montaje...
+
+   Instalamos el sistema base de ArchLinux y el grub...
+
+   # pacstrap -i /mnt base base-devel -> instala el sistema base
+   # pacstrap /mnt grub -> descarga el grub
+   # pacstrap /mnt networkmanager -> para tener un mejor control sobre el ca-
+                                     ble de inter y wifi
+
+   Ahora generamos el archivo fstab que sirve para reconocer los discos...
+
+   # genfstab -U -p /mnt >> /mnt/etc/fstab
+
+   Entramos en modo con chroot al sistema instalado...
+
+   # arch-chroot /mnt /bin/bash
+
+   # vi /etc/locale.gen        -> editamos el idioma que queremos genera en el
+                                  sistema instalado.
+   # locale-gen
+   # vi /etc/locale.conf
+     Agregamos los siguiente: LANG=es_PE.UTF-8
+     esta misma es una variable del sistema...
+   # vi /etc/vconsole.conf
+     Agregamos lo siguiente: KEYMAP=la-latin1
+   # echo nx6325 > /etc/hostname     -> Nombre del equipo...
+   # ln -s /usr/share/zoneinfo/America/Lima /etc/localtime
+   # hwclock --systohc --utc
+   # ip link
+   # systemctl enable dhcpcd@enp0s3     ->  Carga junto con el sistema cada
+                                            vez, internet x cable...
+   # mkinitcpio -p linux     -> Corre el ramdisk
+   # passwd   -> agregas contrasenia al root
+   # pacman -Sy    -> Actualizamos los repositorios...
+   # pacman os-prober   -> Sirve para que reconozca otros sistemas operativos
+                           como windows 7...
+   # grub-install --recheck /dev/sda
+   # grub-mkconfig -o /boot/grub/grub.cfg     -> Deberia reconocer Archlinux
+                                                 y windows vista...
+   
+   Una vez hecho ello salimos de modo chroot y volvemos al sistema de insta-
+   lacion...
+   # exit
+   Desmontamos las particiones...
+   # umount -R /mnt
+   Reiniciamos
+   # reboot
+
+2. Configuracion basica del sistema, repositorios y usuarios..
+
+   Agregamos nuestro usuario(s)...
+   # useradd -m -g users -G audio,lp,opitcal,storage,video,wheel,games,power,scanner -s /bin/bash dayan
+   # passwd dayan     -> Agrega una contrasenia al usuario dayan....
+   Activamos el grupo wheel editando el achivo /etc/sudoers
+   # nano /etc/sudoers
+     Quitamos (#) de (%wheel ALL=(ALL) ALL)
+   # reboot
+
+   Ingresamos con usuario normal...
+   Actualizamos el sistema
+   
+   $ sudo pacman -Syu
+   
+   Anadimos repositorios secundarios...
+   Esto es necesario para poder instalar yaourt y (aditions para virtualbox en
+   caso de maq virtual)
+
+   $ sudo nano /etc/pacman.conf
+     agregamos al final...
+     [archlinuxfr]
+     SigLevel = Never
+     Server = http://repo.archlinux.fr/$arch
+     En caso de ser una instalacion 64 bits se debe descomentar el multilib ...
+
+   Ahora actualizamos repositorios..
+   $ sudo pacman -Sy
+   Instalamos Yaourt
+   $ sudo pacman -S yaourt
+   TIP: para actualizar todo el sistema incluyendo los paquetes de instalados
+   desde AUR:
+   $ yaourt -Syua
+   En mi caso particular necesito instalar FIRMWARE para wifi broadcom...
+   $ yaourt -S b43-firmware-classic
+   
+   Ahora instalaremos la mesa y driver de video...
+   $ sudo pacman -S xorg-server xorg-xinit xorg-utils xorg-server-utils
+   $ sudo pacman -S mesa mesa-demos
+   $ sudo reboot
+   $ sudo pacman -S xf86-video-ati    -> para tarjetas integradas ati...
+   $ sudo pacman -S xorg-twm xorg-xclock xterm
+   $ startx
+   Si todo salio debio haber salido un entorno basico (tw) que nos servira
+   para instalar entornos graficos mas completos como gnome3 unity xfce4
+   lxde openbox...
+   Para salir del entorno (twm)
+   $ sudo pkill x
+   Para generar carpetas personales...
+   $ sudo pacman -S xdg-user-dirs
+   $ xdg-user-dirs-update
+   Instalar pulse audio (no es necesario si se va a instalar gnome)
+   $ sudo pacman -S pulseaudio pulseaudio-alsa
+   Instalacion de fuentes recomendadas..
+   $ sudo pacman -S ttf-liberation ttf-bitstream-vera ttf-dejavu ttf-droid ttf-freefont
+   Paquetes de fuentes minimistas
+   $ sudo pacman -S artwiz-fonts
+   Con ello terminamos la configuracion basica de ArchLinux..
+
+3. Instalacion del entorno grafico..
+   
+   GNOME3
+   
+   $ sudo pacman -S gnome gnome-extra
+   Instalacion de complementos
+   -Applet de bateria...
+   $ sudo pacman -S gnome-power-manager
+   -Herramienta para configurar la apariencia...
+   $ sudo pacman -S gnome-tweak-tool
+   -Gestor de paquetes graficos..
+   $ sudo pacman -S gnome-packagekit
+   -para que GNOME compruebe automaticamente si hay actualizaciones...
+   $ yaourt -S gnome-settings-daemon-updates polkit-gnome
+   -Activar gestor de inicio de sesion...
+   $ sudo systemctl enable gdm.service
+   $ reboot
+------------------------------------------------------------------------------

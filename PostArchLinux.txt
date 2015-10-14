@@ -1,0 +1,121 @@
+UNA VEZ YA INSTALADO CAMBIOS DE PERSONALIZACION...
+
+1. Entorno de escritorio navegadores y terminal ...
+   
+   a. instalo firefox y chromium. Ambos tiene repositorios oficiales..
+      $ sudo pacman -S firefox
+      $ sudo pacman -S chromium
+   
+   b. #Usando Tweaktool recupero pestania desplegable de aplicaciones...
+      #Extensiones / Applications menu  activo...
+ 
+   c. Usando Tweaktool color tema oscuro global..
+
+   d. Usando Tweaktool / tipografias /factor de escalado / (0.80)
+
+   e. Usando Tweaktool / barra superior / reloj ( mostrar la fecha) (seg).
+
+   f. Tweaktool / Escritorio /iconos en el escritorio (carpeta perso...)
+
+   g. Tweaktool / ventanas / Maximizar y minimizar...
+
+   h. Personalizamos la terminal (transparente...) de AUR
+      $ yaourt gnome-terminal-transparent
+      Esto elimina el paquete terminal.xxx
+      Para configurarlo es recomendable crear un perfil en Archivo/perfil nuevo...
+      Luego en Editar/Preferencias del perfil / Colores / use transparentent background...
+
+   i. Instalamos vim...
+      sudo pacman -S vim
+
+   j. Prompt de usuario y de root...
+      en modo root...
+      vim /etc/bash.bashrc
+      para user..
+      vim .bashrc
+        PS1='\[\e[1;36m\](\A)\[\e[0m\]-\[\e[1;31m\]{\u@\h}\[\e[0m\]-\[\e[1;33m\][\W]\$\[\e[0m\] '
+   
+   k. Activar syntax color de vim (para programar...)
+      editar el archivo /etc/vimrc editando
+      Colocamos: syntax on
+
+   j. Instalamos gparted
+      $ sudo pacman -S gparted
+      $ sudo pacman -S ntfs-3g   -> dependencia para ntfs formato...
+   
+   k. Activar BackSpace en Nautilus
+      Abrimos el archivo "accels"  ~/.config/nautilus/accels
+      Una vez abierto el archivo anadimos la linea..
+       (gtk_accel_path "<Actions>/ShellActions/Up" "BackSpace")
+      Guardamos y reiniciamos Nautilus con cualquiera de estas dos ordenes:
+       nautilus -q
+       killall nautilus
+   
+   i. Agregar vimrc_example.vim:  -> He guardado ese archivo en ~/Documentos/vimrc_example.vim  :  -> Me sirve para C++
+      # mv /etc/vimrc /etc/vimrc.bak
+      # cp /usr/share/vim/vim74/vimrc_example.vim /etc/vimrc
+   
+   j. Instalar plugins de video flash (videos en facebook) para firefox y
+      chromium... (mas info en "Browser plugins Archwiki")
+      Adobe Flash Player
+      Firefox: se instala el paquete oficial "flashplugin" -> $ sudo pacman -S flashplugin
+      Chromium: $ yaourt -S chromium-pepper-flash-dev  -> ya que el otro paquete no me funciono...(mas en "Chromium Archlinux)
+   
+   i. Configuraciones de Grub se puede hacer en /etc/default/grub... Luego de modificar algo se debe reinstalar el grub y re-
+      generar la configuracion del grub en /boot/grub/grub.cfg
+
+   j. Para entrar en modo root con nautilus basta con ejecutarlo en una terminal: $ sudo nautilus
+   
+   k. Para abrir un archivo con el programa predeterminado: $ xdg-open file.xxx
+
+   h. Para configurar los idiomas de entrada de teclado para Gnome, que es muy aparte del sistema (las terminales tty) se debe
+      ir a:
+      configuracion/teclado/fuente de entrada(esta subrayado)/fuente de entrada: agregamos los idiomas...
+      En el panel debe aparecer para cambiar el idioma, tambien funciona super+space
+   
+   i. Para activar el ctrl+alt+j para abrir una terminal en gnome:
+      Se crea una atajo.. 
+      configuracion/teclado/atajo: agregamos la nueva ruta (+)... 
+      
+      Nombre: gnome-terminal
+      Comando: gnome-terminal    ->  Incluso teniendo el gnome-terminal-transparent  ( mi caso ).
+      Luego agregar las teclas ctrl+alt+t
+
+   *j. #Instale cinnamon...
+
+   k. vlc: repositorios oficiales reproductor de videos
+      rhythmbox: repositorios oficiales reproductor de musica
+
+   l. libreoffice: repositorios oficiales
+
+   j. Active las extensiones: Alternatetab, workspace indicator..
+			      User themes
+      Instalo las extensiones: (Transparent top bar)
+			       Gradient top bar
+			       Removable drive menu
+			       Media player indicator
+
+   k. Agregue w3m para navegar por consola...
+   
+   l. Configure en la parte superior (Archivos) / Preferencias:
+      Valores predeterminados para la vista de iconos: Pequeño
+      Valores predeterminados para la vista de lista: Pequeño
+      Marcar (Colocar las carpetas antes que los archivos)
+
+   *m. Cree una carpeta /mnt/win7 para montar la unidad de windows /dev/sda2 alli
+      Creo un link simbolico en Documentos/Users...
+
+   n. Se desconfiguro el reloj asi que instalo ntp (repos oficiales) y para sincronizar manualmente el reloj con la red...
+      ejecuto el comando... # ntp -qg
+      luego para pasar el utc actual del software al reloj del clock.. # hwclock --systohc
+
+   ñ. Para aprender mas sobre vim se puede seguir el tutor de vim con el comando...
+      $ vimtutor
+
+   o. Modifique el prompt: PS1 = '\[\e[1;36m\](\A)\[\e[0m\]-\[\e[1;31m\]{\u@\h}\[\e[0m\]-\[\e[1;33m\][\W]\[\e[1;32m\]\$\[\e[0m\] '
+
+   *p. Instale youtube-dl -> sirve para descargar listas de reproduccion de youtube con el comando:
+      $ youtube-dl -ci link
+
+   *q. Cambie gdm (default display manager for gnome) por lxdm (default display manager for lxde).
+      Para hacer ello primero desactive gdm con systemctl y activo con el mismo para lxdm...
